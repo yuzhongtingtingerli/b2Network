@@ -135,12 +135,12 @@ export const useAddressStore = defineStore("address", {
                     chainId: "0xdf", // 目标链ID
                     chainName: "B2 Mainnet",
                     nativeCurrency: {
-                      name: "MATIC",
-                      symbol: "MATIC",
+                      name: "BTC",
+                      symbol: "BTC",
                       decimals: 18,
                     },
                     rpcUrls: ["https://rpc.bsquared.network"],
-                    blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
+                    blockExplorerUrls: ["https://explorer.bsquared.network/"],
                   },
                 ],
               });

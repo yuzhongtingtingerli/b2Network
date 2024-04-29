@@ -10,7 +10,7 @@ function getBaseUrl() {
     return "";
   }
 }
-console.log("www.bitparty.tech:4000-0427-04");
+console.log("www.bitparty.tech:4000-0429-01");
 const BASEURL =
   process.env.NODE_ENV === "development"
     ? getBaseUrl()
