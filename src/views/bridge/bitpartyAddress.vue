@@ -27,27 +27,48 @@ const open = async (symbol, address) => {
   show.value = true;
 };
 
+const btcBalance = async () => {
+  const web3 = new Web3(window.ethereum);
+  const balance = await web3.eth.getBalance(ETHaddress.value);
+  return decimal(balance, "BTC");
+};
+
 const getBalance = async (address) => {
   const provider = window["ethereum"] || window.web3.currentProvider;
   let web3 = new Web3(provider);
   let brc20Contract = new web3.eth.Contract(indexAbi, address);
-  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
-  if (ETHWalletType === "ip") {
-    web3.setProvider(okxwallet);
-  }
   try {
     const balance = await brc20Contract.methods
       .balanceOf(ETHaddress.value)
       .call();
     return decimal(balance, address);
   } catch (error) {
-    console.log(error, "balance fail");
-    return 0;
+    const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+    if (ETHWalletType === "ip") {
+      web3.setProvider(okxwallet);
+    }
+    try {
+      const res = await brc20Contract.methods
+        .balanceOf(ETHaddress.value)
+        .call();
+      return decimal(res, address);
+    } catch (error) {
+      console.log(error, "balance fail----");
+      return 0;
+    }
   }
 };
 
 const maximum = async () => {
-  balance.value = await getBalance(record.value.address);
+  balance.value = await maxNum();
+};
+
+const maxNum = async () => {
+  if (record.value.TokenSymbol === "BTC") {
+    return await btcBalance();
+  } else {
+    return await getBalance(record.value.address);
+  }
 };
 
 const decimal = (balance, address) => {
@@ -91,7 +112,7 @@ const close = () => {
 const Confirm = async () => {
   if (balance.value === 0) return;
   const min = walletList[record.value.address];
-  const max = await getBalance(record.value.address);
+  const max = await maxNum();
   if (min) {
     if (balance.value < min) {
       return (tipInfo.value = `Please confirm the staking amount should be more than  ${min}`);
@@ -106,12 +127,162 @@ const Confirm = async () => {
   goStake();
 };
 
+const setendtime60 = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  // 40000
+  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
+  const unlockTime = currentTimestampInSeconds + 60;
+  const res = await contract.methods
+    .setEndTime(unlockTime)
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const setendtime40000 = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  // 40000
+  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
+  const unlockTime = currentTimestampInSeconds + 40000;
+  const res = await contract.methods
+    .setEndTime(unlockTime)
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const withdarw20 = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  const res = await contract.methods
+    .withdrawERC20(record.value.address)
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const withdrawnative = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  const res = await contract.methods
+    .withdrawNative()
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const addWhitelist = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  const res = await contract.methods
+    .addWhitelist(record.value.address)
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const delWhitelist = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  const res = await contract.methods
+    .delWhitelist(record.value.address)
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
+const withdrawERC20All = async () => {
+  let stakeAddress;
+  if (window.location.origin.indexOf("bitparty.tech") !== -1) {
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
+  } else {
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
+  }
+  const provider = window["ethereum"] || window.web3.currentProvider;
+  let web3 = new Web3(provider);
+  let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
+  const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+  if (ETHWalletType === "ip") {
+    web3.setProvider(okxwallet);
+  }
+  const res = await contract.methods
+    .withdrawERC20All([
+      "0xE703b28382b2A0C55C11ebc7AE11933380BfDc5A",
+      "0xa9135F1096d5D92716114b302B29430fa0812534",
+      "0x6385be4f5D62Af9266664958F05A4F2F0f0a08B0",
+    ])
+    .send({ from: ETHaddress.value });
+  console.log(res, "res");
+};
+
 const goStake = async () => {
   let stakeAddress;
   if (window.location.origin.indexOf("bitparty.tech") !== -1) {
-    stakeAddress = "0xF3019037f3463e118d2BA69Dd2b4b36e3E609118";
+    stakeAddress = "0xD23A65e1666F7179A6fedaF58F5da3421ce59c74";
   } else {
-    stakeAddress = "0xBC0A8f56DE3bbb46141bbCEB47F2764B8a19C4f5";
+    stakeAddress = "0x0a0295F0f9CB507025222D24c51AD595239B05C4";
   }
   try {
     const provider = window["ethereum"] || window.web3.currentProvider;
@@ -135,33 +306,45 @@ const goStake = async () => {
     let num1 = new Big(balance.value);
     let num2 = new Big("10").pow(num);
     let amount = Number(num1.times(num2).toFixed(6));
-    let brc20Contract = new web3.eth.Contract(erc20Abi, record.value.address);
-    // debugger;
-    brc20Contract.methods
-      .approve(stakeAddress, amount)
-      .send({ from: fromAddresses[0] })
-      .then(async (r) => {
-        console.log("approve res", r);
-        try {
-          const res = await contract.methods
-            .stake(record.value.address, amount)
-            .send({ from: fromAddresses[0] });
-          close();
-          spinning.value = false;
-          emit("change", "success", res.transactionHash);
-        } catch (error) {
-          console.log(error, "stakeerror");
+
+    if (record.value.TokenSymbol === "BTC") {
+      const c = web3.utils.toWei(balance.value.toString(), "ether");
+      const res = await contract.methods.stakeNative().send({
+        from: fromAddresses[0],
+        value: c,
+      });
+      close();
+      spinning.value = false;
+      emit("change", "success", res.transactionHash);
+    } else {
+      let brc20Contract = new web3.eth.Contract(erc20Abi, record.value.address);
+      // debugger;
+      brc20Contract.methods
+        .approve(stakeAddress, amount)
+        .send({ from: fromAddresses[0] })
+        .then(async (r) => {
+          console.log("approve res", r);
+          try {
+            const res = await contract.methods
+              .stakeERC20(record.value.address, amount)
+              .send({ from: fromAddresses[0] });
+            close();
+            spinning.value = false;
+            emit("change", "success", res.transactionHash);
+          } catch (error) {
+            console.log(error, "stakeerror");
+            emit("change", "error", error);
+            close();
+            spinning.value = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error, "approveerror");
           emit("change", "error", error);
           close();
           spinning.value = false;
-        }
-      })
-      .catch((error) => {
-        console.log(error, "approveerror");
-        emit("change", "error", error);
-        close();
-        spinning.value = false;
-      });
+        });
+    }
   } catch (error) {
     console.log(error, "Contracterror");
     emit("change", "error", error);
@@ -219,6 +402,13 @@ defineExpose({ open, close });
         </div>
 
         <div class="btn" @click="Confirm">Confirm</div>
+        <!-- <div class="btn" @click="setendtime60">setendtime60</div>
+        <div class="btn" @click="setendtime40000">setendtime40000</div>
+        <div class="btn" @click="withdarw20">withdarw20</div>
+        <div class="btn" @click="withdrawnative">withdrawnative</div>
+        <div class="btn" @click="addWhitelist">addWhitelist</div>
+        <div class="btn" @click="delWhitelist">delWhitelist</div>
+        <div class="btn" @click="withdrawERC20All">withdrawERC20All</div> -->
       </div>
     </a-spin>
   </a-modal>

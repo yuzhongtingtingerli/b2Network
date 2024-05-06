@@ -64,6 +64,12 @@ const Address = useAddressStore();
 const emit = defineEmits(["change"]);
 const YourBrc = ref([]);
 
+const btcBalance = async () => {
+  const web3 = new Web3(window.ethereum);
+  const balance = await web3.eth.getBalance(Address.getETHaddress);
+  return decimal(balance, "BTC");
+};
+
 const getTokenContract = async () => {
   if (!Address.getETHaddress) return;
   const res = await getTokenContractData({
@@ -97,13 +103,22 @@ const getTokenContract = async () => {
       balance,
     });
   }
+  const btcB = await btcBalance();
+  const btc = {
+    address: "BTC",
+    balance: btcB,
+    ticker: "BTC",
+  };
 
-  YourBrc.value = tokenInfo.map((item) => {
-    return {
-      ...item,
-      balance: getBalanceData(balancesData, item.address),
-    };
-  });
+  YourBrc.value = [
+    btc,
+    ...tokenInfo.map((item) => {
+      return {
+        ...item,
+        balance: getBalanceData(balancesData, item.address),
+      };
+    }),
+  ];
 };
 
 const getBalanceData = (balancesData, address) => {
@@ -115,18 +130,25 @@ const getBalance = async (address) => {
   try {
     let web3 = new Web3(window.web3.currentProvider);
     let brc20Contract = new web3.eth.Contract(indexAbi, address);
-    const ETHWalletType = window.localStorage.getItem("ETHWalletType");
-    if (ETHWalletType === "ip") {
-      web3.setProvider(okxwallet);
-    }
     try {
       const res = await brc20Contract.methods
         .balanceOf(Address.getETHaddress)
         .call();
       return decimal(res, address);
     } catch (error) {
-      console.log(error, "balance fail");
-      return 0;
+      const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+      if (ETHWalletType === "ip") {
+        web3.setProvider(okxwallet);
+      }
+      try {
+        const res = await brc20Contract.methods
+          .balanceOf(Address.getETHaddress)
+          .call();
+        return decimal(res, address);
+      } catch (error) {
+        console.log(error, "balance fail----");
+        return 0;
+      }
     }
   } catch (error) {
     console.log(error, "e");
@@ -155,7 +177,7 @@ const balancesList = async (address, ary) => {
   return balancesData;
 };
 
-const decimal = (hex, address) => {
+const decimal = (hex, address = "") => {
   let decimal = parseInt(hex); // 不指定进制，默认按照十进制转换
   let num =
     address === "0xE544e8a38aDD9B1ABF21922090445Ba93f74B9E5" ||
@@ -168,7 +190,10 @@ const decimal = (hex, address) => {
 const TokenLogo = ref(null);
 const getTokenLogo = async () => {
   const data = await getTokenLogoData();
-  TokenLogo.value = data.result;
+  TokenLogo.value = {
+    BTC: "https://static.oklink.com/cdn/assets/imgs/MjAxOTc/1254C5731DCE6B41F928F1FC529E8505.jpg",
+    ...data.result,
+  };
 };
 const getLogo = (ticker) => {
   if (ticker in TokenLogo.value && TokenLogo.value[ticker] !== "null")

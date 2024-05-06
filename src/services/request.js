@@ -10,7 +10,9 @@ function getBaseUrl() {
     return "";
   }
 }
-console.log("www.bitparty.tech:4000-0429-01");
+// http://68.178.206.124:3434
+// https://www.bitparty.tech:4000
+console.log("www.bitparty.tech-0430-06");
 const BASEURL =
   process.env.NODE_ENV === "development"
     ? getBaseUrl()

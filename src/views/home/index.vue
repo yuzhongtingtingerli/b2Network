@@ -30,7 +30,7 @@
                   >B</span
                 >
                 <div class="scale2">2</div>
-                NETWORK
+                NETWORK、ScaleBit
               </div>
               <div class="right" v-if="active === 1">
                 <img src="@/assets/Vector.png" alt="" srcset="" />
@@ -73,6 +73,11 @@
                   >https://www.bsquared.network/</a
                 >
               </div>
+              <div>
+                Learn ScaleBit：<a target="_blank" href="https://scalebit.xyz/"
+                  >https://scalebit.xyz/</a
+                >
+              </div>
             </div>
           </div>
           <div class="list-item">
@@ -88,11 +93,20 @@
               </div>
             </div>
             <div class="content" v-if="active === 2">
-              b2scan ：<a
-                target="_blank"
-                href="https://explorer.bsquared.network/address/0xF3019037f3463e118d2BA69Dd2b4b36e3E609118/"
-                >https://explorer.bsquared.network/address/0xF3019037f3463e118d2BA69Dd2b4b36e3E609118</a
-              >
+              <div>
+                b2scan：<a
+                  target="_blank"
+                  href="https://explorer.bsquared.network/address/0xD23A65e1666F7179A6fedaF58F5da3421ce59c74/"
+                  >https://explorer.bsquared.network/address/0xD23A65e1666F7179A6fedaF58F5da3421ce59c74</a
+                >
+              </div>
+              <div>
+                Audit report：<a
+                  target="_blank"
+                  href="https://scalebit.xyz/reports/BitParty-Final-Audit-Report.pdf"
+                  >https://scalebit.xyz/reports/BitParty-Final-Audit-Report.pdf</a
+                >
+              </div>
             </div>
           </div>
           <!-- <div class="list-item">
@@ -284,7 +298,7 @@ const goMap = () => {
         transform: scale(0.5);
         position: absolute;
         top: -2px;
-        right: 68px;
+        right: 130px;
       }
     }
     .scale-text2 {

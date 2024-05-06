@@ -87,6 +87,13 @@ const handleStatus = (item) => {
   TokenSymbol.value = item.TokenSymbol;
   bitpartyAddressRef.value.open(item, Address.ETHaddress);
 };
+
+const btcBalance = async () => {
+  const web3 = new Web3(window.ethereum);
+  const balance = await web3.eth.getBalance(Address.getETHaddress);
+  return decimal(balance, "BTC");
+};
+
 const walletStakeInfo = ref(null);
 const getTotalTokenContract = async () => {
   const res = await getTotalTokenContractData();
@@ -118,12 +125,22 @@ const getTotalTokenContract = async () => {
       balance,
     });
   }
-  walletStakeInfo.value = tokenInfo.map((item) => {
-    return {
-      ...item,
-      TokenStakeBalance: getBalanceData(balancesData, item.address),
-    };
-  });
+  const btcB = await btcBalance();
+  const btc = {
+    address: "BTC",
+    TokenStakeBalance: btcB,
+    TokenSymbol: "BTC",
+  };
+
+  walletStakeInfo.value = [
+    btc,
+    ...tokenInfo.map((item) => {
+      return {
+        ...item,
+        TokenStakeBalance: getBalanceData(balancesData, item.address),
+      };
+    }),
+  ];
   // .filter((item) => item.TokenStakeBalance > 0);
 };
 
@@ -131,18 +148,25 @@ const getBalance = async (address) => {
   try {
     let web3 = new Web3(window.web3.currentProvider);
     let brc20Contract = new web3.eth.Contract(indexAbi, address);
-    const ETHWalletType = window.localStorage.getItem("ETHWalletType");
-    if (ETHWalletType === "ip") {
-      web3.setProvider(okxwallet);
-    }
     try {
       const balance = await brc20Contract.methods
         .balanceOf(Address.getETHaddress)
         .call();
       return decimal(balance, address);
     } catch (error) {
-      console.log(error, "balance fail----");
-      return 0;
+      const ETHWalletType = window.localStorage.getItem("ETHWalletType");
+      if (ETHWalletType === "ip") {
+        web3.setProvider(okxwallet);
+      }
+      try {
+        const res = await brc20Contract.methods
+          .balanceOf(Address.getETHaddress)
+          .call();
+        return decimal(res, address);
+      } catch (error) {
+        console.log(error, "balance fail----");
+        return 0;
+      }
     }
   } catch (error) {
     console.log(error, "e");
