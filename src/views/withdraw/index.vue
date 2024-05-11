@@ -197,7 +197,6 @@ const chooseWallet = async (type) => {
 
 const assetInfo = ref(null);
 const assetList = ref(null);
-const withdrawType = ref(0);
 const getAssetInfo = async (address) => {
   const res = await getAssetListData({
     EthAddress: address,
@@ -211,15 +210,15 @@ const getAssetInfo = async (address) => {
     if (res.result.AssetsInfo.length === 1) {
       let contractNum;
       assetList.value = null;
-      contractNum = info[item.ContractName] === "Contract1" ? 1 : 2;
+      contractNum =
+        res.result.AssetsInfo[0].ContractName === "Contract1" ? 1 : 2;
       contract.value = contractNum;
-      assetList.value = info[contractNum === 1 ? "Contract1" : "Contract2"];
+      assetList.value = res.result.AssetsInfo[0];
     } else {
       assetList.value = info["Contract1"];
     }
   }
   assetInfo.value = { ...info };
-  // withdrawType.value = Number(res.result.WithdrawType);
 };
 
 const getAssetList = async (c) => {
