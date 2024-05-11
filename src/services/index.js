@@ -32,6 +32,8 @@ import {
   getTokenContract,
   addCustomerToken,
   getTotalTokenContract,
+  getAssetList,
+  doWithdraw,
 } from "./api";
 
 export const getGroupDetailInfoData = async (params) => {
@@ -485,6 +487,34 @@ export const addCustomerTokenData = async (params) => {
 export const getTotalTokenContractData = async () => {
   try {
     const { code, result, status } = await getTotalTokenContract();
+    const statusCode = parseInt(code);
+    if (statusCode === 1) {
+      return { status, statusCode, result };
+    } else {
+      return { status, statusCode, result: result };
+    }
+  } catch (error) {
+    return { result: error };
+  }
+};
+
+export const getAssetListData = async (params) => {
+  try {
+    const { code, result, status } = await getAssetList(params);
+    const statusCode = parseInt(code);
+    if (statusCode === 1) {
+      return { status, statusCode, result };
+    } else {
+      return { status, statusCode, result: result };
+    }
+  } catch (error) {
+    return { result: error };
+  }
+};
+
+export const doWithdrawData = async (params) => {
+  try {
+    const { code, result, status } = await doWithdraw(params);
     const statusCode = parseInt(code);
     if (statusCode === 1) {
       return { status, statusCode, result };

@@ -223,3 +223,27 @@ export const addCustomerToken = ({
 export const getTotalTokenContract = () => {
   return request(`/b2/stake/getTotalTokenContract`, "get");
 };
+
+export const getAssetList = ({ EthAddress, ContractType }) => {
+  let url;
+  if (ContractType) {
+    url = `/b2/withdraw/withdrawAssetList?EthAddress=${EthAddress}&ContractType=${ContractType}`;
+  } else {
+    url = `/b2/withdraw/withdrawAssetList?EthAddress=${EthAddress}`;
+  }
+  return request(url, "get");
+};
+
+export const doWithdraw = ({
+  StakeAddress,
+  StakeSymbol,
+  StakeTokenStatus,
+  Txhash,
+}) => {
+  return requestPost(`/b2/withdraw/doWithdraw`, "post", {
+    StakeAddress,
+    StakeSymbol,
+    StakeTokenStatus,
+    Txhash,
+  });
+};

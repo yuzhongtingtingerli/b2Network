@@ -38,6 +38,9 @@
           >
           <a href="https://docs.bitparty.tech" target="_blank">Whitepaper</a>
           <!-- <router-link to="/empty">Safe And Privacy</router-link> -->
+          <router-link :class="getCurrentRoute('/withdraw')" to="/withdraw"
+            >Withdraw</router-link
+          >
         </div>
       </div>
       <div class="right">
@@ -46,6 +49,7 @@
           v-if="
             currentRoute != '/bridge' &&
             currentRoute != '/stake' &&
+            currentRoute != '/withdraw' &&
             currentRoute != '/rank'
           "
         >
@@ -79,7 +83,11 @@
         </div>
         <div
           :class="`Wallet ${currentRoute === '/rank' ? 'white' : ''}`"
-          v-if="currentRoute != '/bridge' && currentRoute != '/stake'"
+          v-if="
+            currentRoute != '/bridge' &&
+            currentRoute != '/stake' &&
+            currentRoute != '/withdraw'
+          "
         >
           <div @click="connectWallet">
             <img

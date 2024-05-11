@@ -8,7 +8,7 @@ export const getMoney = (money) => {
   if (money === 0) return "0";
   if (money === "null") return "0";
   const num = money.toString().split(".")[0].length > 6 ? 3 : 6;
-  const m = Number((Math.floor(money * 10 ** num) / 10 ** num).toFixed(num));
+  const m = Number(money).toFixed(num);
   // 每隔三位小数加一个,
   return m?.toString().replace(/\d+/, function (n) {
     return n.replace(/(\d)(?=(\d{3})+$)/g, function ($1) {

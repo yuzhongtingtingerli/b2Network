@@ -14,11 +14,13 @@ declare module 'vue' {
     ASpin: typeof import('ant-design-vue/es')['Spin']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     ChooseWallet: typeof import('./src/components/chooseWallet.vue')['default']
+    copy: typeof import('./src/components/success-msg copy.vue')['default']
     ErrorInfo: typeof import('./src/components/error-info.vue')['default']
     ErrorMsg: typeof import('./src/components/error-msg.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StakeSuccess: typeof import('./src/components/stake-success.vue')['default']
+    SuccessInfo: typeof import('./src/components/success-info.vue')['default']
     SuccessMsg: typeof import('./src/components/success-msg.vue')['default']
     Title: typeof import('./src/components/title.vue')['default']
   }
