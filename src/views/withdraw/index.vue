@@ -1,114 +1,118 @@
 <template>
   <div class="withdraw">
-    <div class="title">
-      <span v-if="!Address.ETHaddress">S2 Withdraw now !</span>
-      <span v-else-if="!assetInfo">Sorry for u !</span>
-      <span v-else-if="assetInfo">Salute u !</span>
-    </div>
-    <div class="img">
-      <img src="@/assets/withdraw-logo.png" width="195px" />
-    </div>
-    <div class="list">
-      <div class="msg">
-        <div class="small-title">you will receive:</div>
-        <div class="wallet">
-          <div @click="connectETHWallet">
-            <img
-              v-if="Address.ETHaddress && Address.getETHWalletType === 'eth'"
-              src="@/assets/matemask.png"
-              width="28px"
-              style="margin-right: 12px"
-              alt=""
-              srcset=""
-            />
-            <img
-              v-if="Address.ETHaddress && Address.getETHWalletType === 'ip'"
-              src="@/assets/okx-wallet.png"
-              width="28px"
-              style="margin-right: 12px"
-              alt=""
-              srcset=""
-            />
-            {{
-              Address.ETHaddress
-                ? getAddress(Address.ETHaddress)
-                : "Connect ETH Wallet"
-            }}
-          </div>
-
-          <div class="isQuit" v-if="isETHQuit" @click="ethQuit">log out</div>
-        </div>
+    <a-spin :spinning="spinning">
+      <div class="title">
+        <span v-if="!Address.ETHaddress">S2 Withdraw now !</span>
+        <span v-else-if="!assetList">Sorry for u !</span>
+        <span v-else-if="assetList">Salute u !</span>
       </div>
-      <div class="content">
-        <div class="unconnectedWallet" v-if="!Address.ETHaddress">
-          Please log in to your staking wallet firtst
-        </div>
-        <div class="unconnectedWallet" v-else-if="!assetInfo">
-          This wallet address does not participate in s2 activities
-        </div>
-        <div v-else-if="assetInfo" class="connectedWallet">
-          <div class="contract">
-            <div
-              v-if="assetInfo['Contract1']"
-              :class="`contract-item ${contract === 1 ? 'activeC' : ''}`"
-              @click="chooseContract(1)"
-            >
-              Contract 1
+      <div class="img">
+        <img src="@/assets/withdraw-logo.png" width="195px" />
+      </div>
+      <div class="list">
+        <div class="msg">
+          <div class="small-title">you will receive:</div>
+          <div class="wallet">
+            <div @click="connectETHWallet">
+              <img
+                v-if="Address.ETHaddress && Address.getETHWalletType === 'eth'"
+                src="@/assets/matemask.png"
+                width="28px"
+                style="margin-right: 12px"
+                alt=""
+                srcset=""
+              />
+              <img
+                v-if="Address.ETHaddress && Address.getETHWalletType === 'ip'"
+                src="@/assets/okx-wallet.png"
+                width="28px"
+                style="margin-right: 12px"
+                alt=""
+                srcset=""
+              />
+              {{
+                Address.ETHaddress
+                  ? getAddress(Address.ETHaddress)
+                  : "Connect ETH Wallet"
+              }}
             </div>
-            <div
-              v-if="assetInfo['Contract2']"
-              :class="`contract-item ${contract === 2 ? 'activeC' : ''}`"
-              @click="chooseContract(2)"
-            >
-              Contract 2
-            </div>
+
+            <div class="isQuit" v-if="isETHQuit" @click="ethQuit">log out</div>
           </div>
-          <div class="list">
-            <div
-              class="list-item"
-              v-for="list in assetList.StakeInfo"
-              :key="list.StakeTokenSymbol"
-            >
-              <div class="symbol">
-                {{ decodeURIComponent(list.StakeTokenSymbol) }}
-              </div>
-              <div class="balance">{{ getMoney(list.TotalTokenBalance) }}</div>
-              <div v-if="getTxHash(list.TxHash) === 1"></div>
-              <div class="pending" v-if="getTxHash(list.TxHash) === 2">
-                Pending
+        </div>
+        <div class="content">
+          <div class="unconnectedWallet" v-if="!Address.ETHaddress">
+            Please log in to your staking wallet firtst
+          </div>
+          <div class="unconnectedWallet" v-else-if="!assetList">
+            This wallet address does not participate in s2 activities
+          </div>
+          <div v-else-if="assetInfo" class="connectedWallet">
+            <div class="contract">
+              <div
+                v-if="assetInfo['Contract1']"
+                :class="`contract-item ${contract === 1 ? 'activeC' : ''}`"
+                @click="chooseContract(1)"
+              >
+                Contract 1
               </div>
               <div
-                v-if="getTxHash(list.TxHash) === 3"
-                @click="goTxHash(list.TxHash)"
+                v-if="assetInfo['Contract2']"
+                :class="`contract-item ${contract === 2 ? 'activeC' : ''}`"
+                @click="chooseContract(2)"
               >
-                Transaction Hash:
-                <span class="tx-hash">{{ getAddress(list.TxHash) }}</span>
+                Contract 2
+              </div>
+            </div>
+            <div class="list" v-if="assetList">
+              <div
+                class="list-item"
+                v-for="list in assetList.StakeInfo"
+                :key="list.StakeTokenSymbol"
+              >
+                <div class="symbol">
+                  {{ decodeURIComponent(list.StakeTokenSymbol) }}
+                </div>
+                <div class="balance">
+                  {{ getMoney(list.TotalTokenBalance) }}
+                </div>
+                <div v-if="getTxHash(list.TxHash) === 1"></div>
+                <div class="pending" v-if="getTxHash(list.TxHash) === 2">
+                  Pending
+                </div>
+                <div
+                  v-if="getTxHash(list.TxHash) === 3"
+                  @click="goTxHash(list.TxHash)"
+                >
+                  Transaction Hash:
+                  <span class="tx-hash">{{ getAddress(list.TxHash) }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="btn">
-        <div
-          :class="`withdraw-btn ${
-            assetList?.BTCEnable === '1' ? 'active' : ''
-          }`"
-          @click="goWithdrawBTC"
-        >
-          Withdraw BTC
+        <div class="btn">
+          <div
+            :class="`withdraw-btn ${
+              assetList?.BTCEnable === '1' ? 'active' : ''
+            }`"
+            @click="goWithdrawBTC"
+          >
+            Withdraw BTC
+          </div>
+          <div
+            :class="`withdraw-btn ${
+              assetList?.ERCEnable === '1' ? 'active' : ''
+            }`"
+            @click="goWithdrawERC20"
+          >
+            Withdraw ERC20
+          </div>
         </div>
-        <div
-          :class="`withdraw-btn ${
-            assetList?.ERCEnable === '1' ? 'active' : ''
-          }`"
-          @click="goWithdrawERC20"
-        >
-          Withdraw ERC20
-        </div>
-      </div>
 
-      <div class="info">You will get What you hv staked assets.</div>
-    </div>
+        <div class="info">You will get What you hv staked assets.</div>
+      </div>
+    </a-spin>
     <SuccessInfo ref="successInfoRef" />
     <ChooseWallet ref="chooseWalletRef" @change="chooseWallet" />
     <ErrorMsg ref="errorMsgRef" />
@@ -153,7 +157,7 @@ if (window.location.origin.indexOf("bitparty.tech") !== -1) {
   ];
   btcType = "nati";
 }
-
+const spinning = ref(false);
 const contract = ref(1);
 const chooseContract = (val) => {
   contract.value = val;
@@ -198,37 +202,50 @@ const chooseWallet = async (type) => {
 const assetInfo = ref(null);
 const assetList = ref(null);
 const getAssetInfo = async (address) => {
-  const res = await getAssetListData({
-    EthAddress: address,
-  });
+  spinning.value = true;
   let info = {};
-  if (res.result.AssetsInfo.length > 0) {
-    for (const item of res.result.AssetsInfo) {
-      info[item.ContractName] = item;
-    }
+  assetInfo.value = null;
+  assetList.value = null;
+  try {
+    const res = await getAssetListData({
+      EthAddress: address,
+    });
 
-    if (res.result.AssetsInfo.length === 1) {
-      let contractNum;
-      assetList.value = null;
-      contractNum =
-        res.result.AssetsInfo[0].ContractName === "Contract1" ? 1 : 2;
-      contract.value = contractNum;
-      assetList.value = res.result.AssetsInfo[0];
-    } else {
-      assetList.value = info["Contract1"];
+    if (res.result.AssetsInfo.length > 0) {
+      for (const item of res.result.AssetsInfo) {
+        info[item.ContractName] = item;
+      }
+      if (res.result.AssetsInfo.length === 1) {
+        let contractNum;
+        contractNum =
+          res.result.AssetsInfo[0].ContractName === "Contract1" ? 1 : 2;
+        contract.value = contractNum;
+        assetList.value = res.result.AssetsInfo[0];
+      } else {
+        assetList.value = info["Contract1"];
+      }
     }
+    assetInfo.value = { ...info };
+    spinning.value = false;
+  } catch (error) {
+    spinning.value = false;
   }
-  assetInfo.value = { ...info };
 };
 
 const getAssetList = async (c) => {
-  const res = await getAssetListData({
-    EthAddress: Address.ETHaddress,
-    ContractType: c,
-  });
-  if (res.result.AssetsInfo.length > 0) {
-    assetList.value = null;
-    assetList.value = res.result.AssetsInfo[0];
+  assetList.value = null;
+  spinning.value = true;
+  try {
+    const res = await getAssetListData({
+      EthAddress: Address.ETHaddress,
+      ContractType: c,
+    });
+    if (res.result.AssetsInfo.length > 0) {
+      assetList.value = res.result.AssetsInfo[0];
+    }
+    spinning.value = false;
+  } catch (error) {
+    spinning.value = false;
   }
 };
 
@@ -319,6 +336,7 @@ const doWithdraw = async ({
 };
 
 const withdrawnative = async () => {
+  spinning.value = true;
   const provider = window["ethereum"] || window.web3.currentProvider;
   let web3 = new Web3(provider);
   let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
@@ -330,14 +348,17 @@ const withdrawnative = async () => {
     const res = await contract.methods
       .withdrawNative()
       .send({ from: Address.ETHaddress });
+    spinning.value = false;
     return res.transactionHash;
   } catch (error) {
+    spinning.value = false;
     console.log(error, "error");
     return false;
   }
 };
 
 const withdrawERC20All = async () => {
+  spinning.value = true;
   const provider = window["ethereum"] || window.web3.currentProvider;
   let web3 = new Web3(provider);
   let contract = new web3.eth.Contract(stakeAbi, stakeAddress);
@@ -349,9 +370,11 @@ const withdrawERC20All = async () => {
     const res = await contract.methods
       .withdrawERC20All([...withdrawList])
       .send({ from: Address.ETHaddress });
+    spinning.value = false;
     return res.transactionHash;
   } catch (error) {
     console.log(error, "error");
+    spinning.value = false;
     return false;
   }
 };
@@ -369,6 +392,18 @@ onMounted(() => {
   Address.getETHWallet();
 });
 </script>
+<style>
+.withdraw .ant-spin-nested-loading .ant-spin-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+.withdraw .ant-spin-nested-loading {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+</style>
 <style scoped lang="scss">
 .withdraw {
   .title {
@@ -414,9 +449,9 @@ onMounted(() => {
         cursor: pointer;
         .isQuit {
           position: absolute;
-          top: 62px;
+          top: 42px;
           left: 0;
-          width: 240px;
+          width: 155px;
           height: 44px;
           line-height: 44px;
           text-align: center;
@@ -425,7 +460,7 @@ onMounted(() => {
           color: #fff;
           text-transform: capitalize;
           background-image: url("@/assets/logOut.png");
-          background-size: 240px 44px;
+          background-size: 155px 44px;
           z-index: 1;
         }
       }
