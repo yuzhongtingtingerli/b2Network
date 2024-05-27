@@ -12,11 +12,11 @@ function getBaseUrl() {
 }
 // http://68.178.206.124:3434
 // https://www.bitparty.tech:4000
-console.log("http://68.178.206.124:3434-0511-05");
+console.log("https://www.bitparty.tech:4000-0527-01");
 const BASEURL =
   process.env.NODE_ENV === "development"
     ? getBaseUrl()
-    : "http://68.178.206.124:3434";
+    : "https://www.bitparty.tech:4000";
 // 创建一个 axios 实例
 const apiInstance = axios.create({});
 
